@@ -1,0 +1,15 @@
+background-color=#504945
+text-color=#ffffff
+
+default-timeout=20000
+ignore-timeout=1
+
+font=Comic Code Ligatures Medium
+
+border-radius=5
+border-size=1
+border-color=#fe8019
+margin=20
+padding=10
+
+

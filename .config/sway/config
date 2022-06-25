@@ -27,11 +27,11 @@ for_window [class="steam_app_1182480"] floating enable
 gaps inner 10
 gaps outer 0
 smart_gaps on
-default_border pixel 2
+default_border pixel 1
 
 ############### THEMING ################
 font pango:Comic Code Ligatures Medium 10
-set $bg            #d65d0e
+set $bg            #ffffff
 set $bg-inactive   #323232
 set $bg-urgent     #000000
 set $text          #eeeeec
