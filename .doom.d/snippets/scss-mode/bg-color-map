@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: bg-color-map
+# key: bg-color-map
+# --
+background-color: map-get(\$colors, "background-light");

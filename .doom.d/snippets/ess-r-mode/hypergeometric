@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: hypergeometric
+# key: hypergeometric
+# --
+x1 = 3 #nimmt nur an wenn höchstens 3 defekt in Lieferung
+x2 = 10 #so viele sind in der lieferung defekt
+x3 = 990 #1000 (komplette Lieferung) - x2
+x4 = 100 #stichproben umfang
+
+phyper(x1,x2,x3,x4, lower.tail=TRUE)

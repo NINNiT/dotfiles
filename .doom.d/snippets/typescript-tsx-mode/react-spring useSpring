@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: react-spring useSpring
+# key: useSpring
+# --
+const anim = useSpring({
+to: { opacity: 0.9 },
+from: { opacity: 1.0 }
+})

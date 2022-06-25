@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: org-re-reveal
+# key: org-re-reveal
+# --
+#+OPTIONS: toc:nil reveal_width:1400 reveal_height:1000
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
+#+REVEAL_VERSION: 4
+#+REVEAL_ADD_PLUGIN: chalkboard RevealChalkboard https://cdn.jsdelivr.net/gh/rajgoel/reveal.js-plugins/chalkboard/plugin.js
+#+REVEAL_THEME: blood
+#+REVEAL_TRANS: slide

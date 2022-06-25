@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: R-graphic
+# key: R-graphic
+# --
+#+BEGIN_SRC R :file 1.png :exports both graphics file :results output graphics file :session
+
+#+END_SRC

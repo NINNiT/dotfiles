@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: double for loop
+# key: double-for
+# --
+for (int x = 0; x < arr.GetLength(0); x++)
+{
+for (int y = 0; y < arr.GetLength(1); y++)
+{
+}
+}

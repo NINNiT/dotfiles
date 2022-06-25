@@ -1,0 +1,454 @@
+#+TITLE: Doom Emacs configuration
+#+AUTHOR: xmasterninni
+#+PROPERTY: header-args :emacs-lisp :tangle yes :comments link
+#+STARTUP: org-startup-folded: content
+#+OPTIONS: toc:nil reveal_width:1400 reveal_height:1000
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
+#+REVEAL_VERSION: 4
+#+REVEAL_ADD_PLUGIN: chalkboard RevealChalkboard https://cdn.jsdelivr.net/gh/rajgoel/reveal.js-plugins/chalkboard/plugin.js
+#+REVEAL_THEME: blood
+#+REVEAL_TRANS: slide
+
+* [3/6] Tasks :noexport:
+** [X] migrate to org literate config
+** KILL implement org source block wrapper function
+** [ ] add org capture templates
+** HOLD dap-mode debugging
+** [ ] check fonts -> nothing cursive
+** [X] add and refine some sort of org presentation method
+
+
+* Configuration
+** Personal Information
+*** Set user full-name and mail-address
+#+begin_src elisp :tangle yes
+(setq user-full-name "Simon"
+      user-mail-address "soelder@hotmail.com")
+#+end_src
+** Keymaps
+#+begin_src elisp :tangle yes
+(map!
+ :desc "Switch dictionary"
+ :leader "j d"
+ 'fd-switch-dictionary)
+
+(map!
+ :desc "org-pretty modde"
+ :leader "j p"
+ '+org-pretty-mode)
+
+(map!
+ :desc "Increase font size"
+ :leader "j +"
+ 'doom/increase-font-size )
+
+(map!
+ :desc "Decrease font size"
+ :leader "j -"
+ 'doom/decrease-font-size )
+
+;; evaluation stuff
+(map! :leader
+      :desc "Evaluate elisp in buffer"
+      "e b" #'eval-buffer
+      :leader
+      :desc "Evaluate defun"
+      "e d" #'eval-defun
+      :leader
+      :desc "Evaluate elisp expression"
+      "e e" #'eval-expression
+      :leader
+      :desc "Evaluate last sexpression"
+      "e l" #'eval-last-sexp
+      :leader
+      :desc "Evaluate elisp in region"
+      "e r" #'eval-region)
+
+(map!
+ :desc "Switch to buffer"
+ :leader "j s"
+ #'switch-to-buffer)
+
+(map!
+ :desc "Jumps to last buffer"
+ :leader
+ "j b" #'evil-switch-to-windows-last-buffer)
+
+(map!
+ :desc "Open mediacube wiki"
+ :leader
+ "j m" #'open-mediacube)
+
+(map!
+ :desc "Open flycheck setup"
+ :leader
+ "j f" #'flycheck-verify-setup)
+
+(map!
+ :desc "Edit org babel "
+ :leader
+ "j e" #'org-edit-special)
+
+(map!
+ :desc "switch to other workspace"
+ :leader
+ "j o" '+workspace/other)
+
+(map!
+ :desc "wrap in org-block"
+ :leader
+ "j w" 'org-insert-structure-template)
+#+end_src
+
+#+RESULTS:
+: org-insert-structure-template
+
+** Fonts
+Doom exposes five (optional) variables for controlling fonts in Doom. Here
+are the three important ones:
+
++ ~doom-font~
++ ~doom-variable-pitch-font~
++ ~doom-big-font~ -- used for ~doom-big-font-mode~; use this for
+presentations or streaming.
+
+They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
+font string.
+
+*** Set font options:
+#+begin_src elisp :tangle yes
+;; (setq doom-font (font-spec :family "Fira Code" :size 15)
+;;       doom-variable-pitch-font (font-spec :family "Fira Code" :size 16) ; inherits `doom-font''s :size
+;;       doom-big-font (font-spec :family "Fira Code" :size 19))
+;;
+(setq doom-font (font-spec :family "Comic Code Ligatures Medium" :size 17)
+      doom-variable-pitch-font (font-spec :family "Comic Code Ligatures" :size 21)
+      doom-big-font (font-spec :family "Source Code Pro" :size 25))
+
+(after! doom-themes
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  )
+
+(custom-set-faces!
+  '(font-lock-comment-face :slant italic)
+  '(font-lock-keyword-face :slant italic))
+(setq global-prettify-symbols-mode t)
+
+#+end_src
+
+#+RESULTS:
+: t
+
+** Theming
+*** Set doom-theme
+#+begin_src elisp :tangle yes
+(setq doom-theme 'doom-gruvbox)
+#+end_src
+*** Load theme
+#+begin_src emacs-lisp :tangle yes
+(defun ap/load-doom-theme (theme)
+  "Disable active themes and load a Doom theme."
+  (interactive (list (intern (completing-read "Theme: "
+                                              (->> (custom-available-themes)
+                                                   (-map #'symbol-name)
+                                                   (--select (string-prefix-p "doom-" it)))))))
+  (ap/switch-theme theme)
+
+  (set-face-foreground 'org-indent (face-background 'default)))
+
+(defun ap/switch-theme (theme)
+  "Disable active themes and load THEME."
+  (interactive (list (intern (completing-read "Theme: "
+                                              (->> (custom-available-themes)
+                                                   (-map #'symbol-name))))))
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme theme 'no-confirm))
+#+end_src
+
+*** Splash Screen
+#+begin_src emacs-lisp :tangle yes
+(setq fancy-splash-image "~/.doom.d/splash.png")
+#+end_src
+
+#+RESULTS:
+: ~/.doom.d/splash.png
+
+** Org-Mode
+*** Set org-directory
+#+begin_src elisp :tangle yes
+(setq org-directory "~/org/")
+#+end_src
+** Tramp
+*** Performance Tweaks
+#+begin_src elisp :tangle yes
+;; (setq remote-file-name-inhibit-cache nil)
+;; (setq vc-ignore-dir-regexp
+;;       (format "%s\\|%s"
+;;                     vc-ignore-dir-regexp
+;;                     tramp-file-name-regexp))
+;; (setq tramp-verbose 1)
+#+end_src
+
+#+RESULTS:
+: 1
+
+** treesitter
+#+begin_src elisp :tangle yes
+;; (use-package! tree-sitter
+;;   :config
+;;   (require 'tree-sitter-langs)
+;;   (global-tree-sitter-mode)
+;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+#+end_src
+
+#+RESULTS:
+: t
+
+** GPG
+*** Disable format on save for =authinfo= mode
+#+begin_src emacs-lisp :tangle yes
+(add-hook! authinfo-mode-hook (format-all-mode -1))
+#+end_src
+
+** DOOM Core
+*** Some more settings, not sure where to put them yet
+#+begin_src elisp :tangle yes
+;; (setq display-line-numbers-type t)
+;; (setq doom-gc-cons-threshold 33554432)
+;; (setq tramp-default-method "ssh")
+;; (setq ranger-override-dired-mode t)
+;; (setq auto-save-default t)
+;; (setq evil-want-fine-undo t)
+;; (global-auto-revert-mode 1)
+;; (setq undo-limit 80000000)
+;; (setq inhibit-compacting-font-caches t)
+;; (whitespace-mode -1)
+
+;; (setq-default
+;;  ;; tab-width 4
+;;  uniquify-buffer-name-style 'forward
+;;  window-combination-resize t
+;;  x-stretch-cursor nil)
+#+end_src
+*** Move items to trash on delete
+#+BEGIN_SRC elisp :tangle yes
+(setq
+ trash-directory "~/.Trash/"
+ delete-by-moving-to-trash t)
+#+END_SRC
+
+*** Winner mode to undo/redo window managamanet
+#+begin_src elisp :tangle yes
+;; (map! :leader
+;;       (:prefix ("w" . "window")
+;;        :desc "Winner redo" "<right>" #'winner-redo
+;;        :desc "Winner undo" "<left>" #'winner-undo))
+
+#+end_src
+*** emacsclient
+#+begin_src emacs-lisp :tangle yes
+(after! persp-mode
+  (setq persp-emacsclient-init-frame-behaviour-override "main"))
+#+end_src
+** GitHub Copilot
+#+begin_src emacs-lisp :tangle yes
+(defun my-tab ()
+  (interactive)
+  (or (copilot-accept-completion)
+      (company-indent-or-complete-common nil)))
+
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (("C-TAB" . 'copilot-accept-completion-by-word)
+         ("C-<tab>" . 'copilot-accept-completion-by-word)
+         :map company-active-map
+         ("<tab>" . 'my-tab)
+         ("TAB" . 'my-tab)
+         :map company-mode-map
+         ("<tab>" . 'my-tab)
+         ("TAB" . 'my-tab)))
+#+end_src
+** C#
+*** Enable treesitter
+#+begin_src elisp
+;; (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode))
+;; (add-hook 'csharp-tree-sitter-mode-hook #'lsp)
+#+end_src
+
+** Typescript/Javascipt/WEB
+#+begin_src emacs-lisp :tangle yes
+;; (setq! typescript-indent-level 2)
+;; (setq! js-indent-level 2)
+;; (setq! web-mode-css-indent-offset 2)
+;; (setq-hook! 'js2-mode-hook +format-with-lsp nil)
+;; (setq-hook! js2-jsx-mode-hook +format-with-lsp nil)
+;; (setq-hook! 'typescript-mode-hook +format-with-lsp nil)
+;; (setq-hook! 'typescript-tsx-mode-hook +format-with-lsp nil)
+;; (setq! lsp-eslint-enable t)
+
+;; (add-hook! 'typescript-tsx-mode-hook 'rainbow-mode)
+;; (add-hook! 'typescript-mode-hook 'rainbow-mode)
+;; (add-hook! 'tsx-mode-hook 'rainbow-mode)
+
+;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-mode))
+;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+#+end_src
+
+#+RESULTS:
+: ((\.tsx\' . typescript-mode) (\.[pP][dD][fF]\' . pdf-view-mode) (\.odc\' . archive-mode) (\.odf\' . archive-mode) (\.odi\' . archive-mode) (\.otp\' . archive-mode) (\.odp\' . archive-mode) (\.otg\' . archive-mode) (\.odg\' . archive-mode) (\.ots\' . archive-mode) (\.ods\' . archive-mode) (\.odm\' . archive-mode) (\.ott\' . archive-mode) (\.odt\' . archive-mode) (\.tsx\' . tsx-mode) (\.cs\' . csharp-tree-sitter-mode) (Procfile\' . yaml-mode) (templates/.+\.php\' . web-mode) (wp-content/themes/.+/.+\.php\' . web-mode) (\.eco\' . web-mode) (\.jinja2?\' . web-mode) (\.twig\' . web-mode) (\.svelte\' . web-mode) (\.mustache\' . web-mode) (\.hbs\' . web-mode) (\.ejs\' . web-mode) (\.as[cp]x\' . web-mode) (\.jsp\' . web-mode) (\.sface\' . web-mode) (\.[lh]?eex\' . web-mode) (\.erb\' . web-mode) (\.\(?:tpl\|blade\)\(?:\.php\)?\' . web-mode) (\.[px]?html?\' . web-mode) (/bspwmrc\' . sh-mode) (\.\(?:zunit\|env\)\' . sh-mode) (\.bats\' . sh-mode) (\.rs$ . rustic-mode) (/\.rspec\' . text-mode) (/\(?:Brew\|Fast\)file\' . ruby-mode) (\.\(?:a?rb\|aslsx\)\' . ruby-mode) (/Pipfile\' . conf-mode) ([./]flake8\' . conf-mode) (\.inc\' . php-mode) (/README\(?:\.md\)?\' . gfm-mode) (\.tex\' . LaTeX-mode) (\.tsx\' . typescript-tsx-mode) (\.pac\' . rjsx-mode) (\.es6\' . rjsx-mode) (\.[mc]?js\' . rjsx-mode) (\.js\(?:on\|[hl]int\(?:rc\)?\)\' . json-mode) (\.jl\' . ess-julia-mode) (\.Cask\' . emacs-lisp-mode) (\.sln\' . sln-mode) (\.h\' . +cc-c-c++-objc-mode) (\.mm\' . objc-mode) (\.pdf\' . pdf-view-mode) (\.j2$ . jinja2-mode) (\.rs\' . rust-mode) (\.nw\' . poly-noweb-mode) (\.md\' . poly-markdown-mode) (\.prisma$ . prisma-mode) (/nginx/.+\.conf\' . nginx-mode) (nginx\.conf\' . nginx-mode) (/apache2/sites-\(?:available\|enabled\)/ . apache-mode) (/httpd/conf/.+\.conf\' . apache-mode) (/apache2/.+\.conf\' . apache-mode) (/\(?:access\|httpd\|srm\)\.conf\' . apache-mode) (/\.htaccess\' . apache-mode) (/systemd/[^z-a]+?\.d/[^/]+?\.conf\' . systemd-mode) (\.#\(?:[.0-9@-Z\_a-z-]+?\.\(?:automount\|busname\|link\|mount\|net\(?:dev\|work\)\|s\(?:ervice\|lice\|ocket\|wap\)\|t\(?:arget\|imer\)\)\|override\.conf\)[[:xdigit:]]\{16\}\' . systemd-mode) ([.0-9@-Z\_a-z-]+?\.\(?:automount\|busname\|link\|mount\|net\(?:dev\|work\)\|s\(?:ervice\|lice\|ocket\|wap\)\|t\(?:arget\|imer\)\)\' . systemd-mode) (\.nspawn\' . systemd-mode) (\.styl\' . stylus-mode) (\.sass\' . sass-mode) (\.slim\' . slim-mode) (\.\(?:jade\|pug\)\' . pug-mode) (\.haml\' . haml-mode) (\.rs\' . rustic-mode) (requirements\.in . pip-requirements-mode) (requirements[^z-a]*\.txt\' . pip-requirements-mode) (\.pip\' . pip-requirements-mode) (\.\(?:php[s345]?\|phtml\)\' . php-mode-maybe) (\.\(?:php\.inc\|stub\)\' . php-mode) (/\.php_cs\(?:\.dist\)?\' . php-mode) (\.\(?:md\|markdown\|mkd\|mdown\|mkdn\|mdwn\)\' . markdown-mode) (\.hva\' . latex-mode) (\.ts\' . typescript-mode) (\.jsx\' . rjsx-mode) (\(?:\(?:\.\(?:b\(?:\(?:abel\|ower\)rc\)\|json\(?:ld\)?\)\|composer\.lock\)\'\) . json-mode) (\.cpp[rR]\' . poly-c++r-mode) (\.[Rr]cpp\' . poly-r+c++-mode) (\.[rR]brew\' . poly-brew+r-mode) (\.[rR]html\' . poly-html+r-mode) (\.rapport\' . poly-rapport-mode) (\.[rR]md\' . poly-markdown+r-mode) (\.[rR]nw\' . poly-noweb+r-mode) (\.Snw\' . poly-noweb+r-mode) (\.[Ss][Aa][Ss]\' . SAS-mode) (\.Sout\' . S-transcript-mode) (\.[Ss]t\' . S-transcript-mode) (\.Rd\' . Rd-mode) (DESCRIPTION\' . conf-colon-mode) (/Makevars\(\.win\)?\' . makefile-mode) (\.[Rr]out\' . ess-r-transcript-mode) (CITATION\' . ess-r-mode) (NAMESPACE\' . ess-r-mode) (\.[rR]profile\' . ess-r-mode) (\.[rR]\' . ess-r-mode) (/R/.*\.q\' . ess-r-mode) (\.[Jj][Aa][Gg]\' . ess-jags-mode) (\.[Bb][Mm][Dd]\' . ess-bugs-mode) (\.[Bb][Oo][Gg]\' . ess-bugs-mode) (\.[Bb][Uu][Gg]\' . ess-bugs-mode) (\.[^.]*proj\' . csproj-mode) (\.cs\' . csharp-mode) (\.glsl\' . glsl-mode) (\.geom\' . glsl-mode) (\.frag\' . glsl-mode) (\.vert\' . glsl-mode) (\.cuh\' . cuda-mode) (\.cu\' . cuda-mode) (\.cmake\' . cmake-mode) (CMakeLists\.txt\' . cmake-mode) (/git-rebase-todo\' . git-rebase-mode) (\.editorconfig\' . editorconfig-conf-mode) (\.dockerfile\' . dockerfile-mode) (/Dockerfile\(?:\.[^/\]*\)?\' . dockerfile-mode) (\.\(e?ya?\|ra\)ml\' . yaml-mode) (\.j2\' . jinja2-mode) (\.jinja2\' . jinja2-mode) (/git/ignore\' . gitignore-mode) (/info/exclude\' . gitignore-mode) (/\.gitignore\' . gitignore-mode) (/etc/gitconfig\' . gitconfig-mode) (/\.gitmodules\' . gitconfig-mode) (/git/config\' . gitconfig-mode) (/modules/.*/config\' . gitconfig-mode) (/\.git/config\' . gitconfig-mode) (/\.gitconfig\' . gitconfig-mode) (/git/attributes\' . gitattributes-mode) (/info/attributes\' . gitattributes-mode) (/\.gitattributes\' . gitattributes-mode) (\.gpg\(~\|\.~[0-9]+~\)?\' nil epa-file) (\.elc\' . elisp-byte-code-mode) (\.zst\' nil jka-compr) (\.dz\' nil jka-compr) (\.xz\' nil jka-compr) (\.lzma\' nil jka-compr) (\.lz\' nil jka-compr) (\.g?z\' nil jka-compr) (\.bz2\' nil jka-compr) (\.Z\' nil jka-compr) (\.vr[hi]?\' . vera-mode) (\(?:\.\(?:rbw?\|ru\|rake\|thor\|jbuilder\|rabl\|gemspec\|podspec\)\|/\(?:Gem\|Rake\|Cap\|Thor\|Puppet\|Berks\|Brew\|Vagrant\|Guard\|Pod\)file\)\' . ruby-mode) (\.re?st\' . rst-mode) (\.py[iw]?\' . python-mode) (\.m\' . octave-maybe-mode) (\.less\' . less-css-mode) (\.scss\' . scss-mode) (\.awk\' . awk-mode) (\.\(u?lpc\|pike\|pmod\(\.in\)?\)\' . pike-mode) (\.idl\' . idl-mode) (\.java\' . java-mode) (\.m\' . objc-mode) (\.ii\' . c++-mode) (\.i\' . c-mode) (\.lex\' . c-mode) (\.y\(acc\)?\' . c-mode) (\.h\' . c-or-c++-mode) (\.c\' . c-mode) (\.\(CC?\|HH?\)\' . c++-mode) (\.[ch]\(pp\|xx\|\+\+\)\' . c++-mode) (\.\(cc\|hh\)\' . c++-mode) (\.\(bat\|cmd\)\' . bat-mode) (\.[sx]?html?\(\.[a-zA-Z_]+\)?\' . mhtml-mode) (\.svgz?\' . image-mode) (\.svgz?\' . xml-mode) (\.x[bp]m\' . image-mode) (\.x[bp]m\' . c-mode) (\.p[bpgn]m\' . image-mode) (\.tiff?\' . image-mode) (\.gif\' . image-mode) (\.png\' . image-mode) (\.jpe?g\' . image-mode) (\.te?xt\' . text-mode) (\.[tT]e[xX]\' . tex-mode) (\.ins\' . tex-mode) (\.ltx\' . latex-mode) (\.dtx\' . doctex-mode) (\.org\' . org-mode) (\.dir-locals\(?:-2\)?\.el\' . lisp-data-mode) (eww-bookmarks\' . lisp-data-mode) (tramp\' . lisp-data-mode) (/archive-contents\' . lisp-data-mode) (places\' . lisp-data-mode) (\.emacs-places\' . lisp-data-mode) (\.el\' . emacs-lisp-mode) (Project\.ede\' . emacs-lisp-mode) (\.\(scm\|stk\|ss\|sch\)\' . scheme-mode) (\.l\' . lisp-mode) (\.li?sp\' . lisp-mode) (\.[fF]\' . fortran-mode) (\.for\' . fortran-mode) (\.p\' . pascal-mode) (\.pas\' . pascal-mode) (\.\(dpr\|DPR\)\' . delphi-mode) (\.\([pP]\([Llm]\|erl\|od\)\|al\)\' . perl-mode) (Imakefile\' . makefile-imake-mode) (Makeppfile\(?:\.mk\)?\' . makefile-makepp-mode) (\.makepp\' . makefile-makepp-mode) (\.mk\' . makefile-gmake-mode) (\.make\' . makefile-gmake-mode) ([Mm]akefile\' . makefile-gmake-mode) (\.am\' . makefile-automake-mode) (\.texinfo\' . texinfo-mode) (\.te?xi\' . texinfo-mode) (\.[sS]\' . asm-mode) (\.asm\' . asm-mode) (\.css\' . css-mode) (\.mixal\' . mixal-mode) (\.gcov\' . compilation-mode) (/\.[a-z0-9-]*gdbinit . gdb-script-mode) (-gdb\.gdb . gdb-script-mode) ([cC]hange\.?[lL]og?\' . change-log-mode) ([cC]hange[lL]og[-.][0-9]+\' . change-log-mode) (\$CHANGE_LOG\$\.TXT . change-log-mode) (\.scm\.[0-9]*\' . scheme-mode) (\.[ckz]?sh\'\|\.shar\'\|/\.z?profile\' . sh-mode) (\.bash\' . sh-mode) (/PKGBUILD\' . sh-mode) (\(/\|\`\)\.\(bash_\(profile\|history\|log\(in\|out\)\)\|z?log\(in\|out\)\)\' . sh-mode) (\(/\|\`\)\.\(shrc\|zshrc\|m?kshrc\|bashrc\|t?cshrc\|esrc\)\' . sh-mode) (\(/\|\`\)\.\([kz]shenv\|xinitrc\|startxrc\|xsession\)\' . sh-mode) (\.m?spec\' . sh-mode) (\.m[mes]\' . nroff-mode) (\.man\' . nroff-mode) (\.sty\' . latex-mode) (\.cl[so]\' . latex-mode) (\.bbl\' . latex-mode) (\.bib\' . bibtex-mode) (\.bst\' . bibtex-style-mode) (\.sql\' . sql-mode) (\(acinclude\|aclocal\|acsite\)\.m4\' . autoconf-mode) (\.m[4c]\' . m4-mode) (\.mf\' . metafont-mode) (\.mp\' . metapost-mode) (\.vhdl?\' . vhdl-mode) (\.article\' . text-mode) (\.letter\' . text-mode) (\.i?tcl\' . tcl-mode) (\.exp\' . tcl-mode) (\.itk\' . tcl-mode) (\.icn\' . icon-mode) (\.sim\' . simula-mode) (\.mss\' . scribe-mode) (\.f9[05]\' . f90-mode) (\.f0[38]\' . f90-mode) (\.indent\.pro\' . fundamental-mode) (\.\(pro\|PRO\)\' . idlwave-mode) (\.srt\' . srecode-template-mode) (\.prolog\' . prolog-mode) (\.tar\' . tar-mode) (\.\(arc\|zip\|lzh\|lha\|zoo\|[jew]ar\|xpi\|rar\|cbr\|7z\|squashfs\|ARC\|ZIP\|LZH\|LHA\|ZOO\|[JEW]AR\|XPI\|RAR\|CBR\|7Z\|SQUASHFS\)\' . archive-mode) (\.oxt\' . archive-mode) (\.\(deb\|[oi]pk\)\' . archive-mode) (\`/tmp/Re . text-mode) (/Message[0-9]*\' . text-mode) (\`/tmp/fol/ . text-mode) (\.oak\' . scheme-mode) (\.sgml?\' . sgml-mode) (\.x[ms]l\' . xml-mode) (\.dbk\' . xml-mode) (\.dtd\' . sgml-mode) (\.ds\(ss\)?l\' . dsssl-mode) (\.js[mx]?\' . javascript-mode) (\.har\' . javascript-mode) (\.json\' . javascript-mode) (\.[ds]?va?h?\' . verilog-mode) (\.by\' . bovine-grammar-mode) (\.wy\' . wisent-grammar-mode) ([:/\]\..*\(emacs\|gnus\|viper\)\' . emacs-lisp-mode) (\`\..*emacs\' . emacs-lisp-mode) ([:/]_emacs\' . emacs-lisp-mode) (/crontab\.X*[0-9]+\' . shell-script-mode) (\.ml\' . lisp-mode) (\.ld[si]?\' . ld-script-mode) (ld\.?script\' . ld-script-mode) (\.xs\' . c-mode) (\.x[abdsru]?[cnw]?\' . ld-script-mode) (\.zone\' . dns-mode) (\.soa\' . dns-mode) (\.asd\' . lisp-mode) (\.\(asn\|mib\|smi\)\' . snmp-mode) (\.\(as\|mi\|sm\)2\' . snmpv2-mode) (\.\(diffs?\|patch\|rej\)\' . diff-mode) (\.\(dif\|pat\)\' . diff-mode) (\.[eE]?[pP][sS]\' . ps-mode) (\.\(?:PDF\|DVI\|OD[FGPST]\|DOCX\|XLSX?\|PPTX?\|pdf\|djvu\|dvi\|od[fgpst]\|docx\|xlsx?\|pptx?\)\' . doc-view-mode-maybe) (configure\.\(ac\|in\)\' . autoconf-mode) (\.s\(v\|iv\|ieve\)\' . sieve-mode) (BROWSE\' . ebrowse-tree-mode) (\.ebrowse\' . ebrowse-tree-mode) (#\*mail\* . mail-mode) (\.g\' . antlr-mode) (\.mod\' . m2-mode) (\.ses\' . ses-mode) (\.docbook\' . sgml-mode) (\.com\' . dcl-mode) (/config\.\(?:bat\|log\)\' . fundamental-mode) (/\.\(authinfo\|netrc\)\' . authinfo-mode) (\.\(?:[iI][nN][iI]\|[lL][sS][tT]\|[rR][eE][gG]\|[sS][yY][sS]\)\' . conf-mode) (\.la\' . conf-unix-mode) (\.ppd\' . conf-ppd-mode) (java.+\.conf\' . conf-javaprop-mode) (\.properties\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-javaprop-mode) (\.toml\' . conf-toml-mode) (\.desktop\' . conf-desktop-mode) (/\.redshift\.conf\' . conf-windows-mode) (\`/etc/\(?:DIR_COLORS\|ethers\|.?fstab\|.*hosts\|lesskey\|login\.?de\(?:fs\|vperm\)\|magic\|mtab\|pam\.d/.*\|permissions\(?:\.d/.+\)?\|protocols\|rpc\|services\)\' . conf-space-mode) (\`/etc/\(?:acpid?/.+\|aliases\(?:\.d/.+\)?\|default/.+\|group-?\|hosts\..+\|inittab\|ksysguarddrc\|opera6rc\|passwd-?\|shadow-?\|sysconfig/.+\)\' . conf-mode) ([cC]hange[lL]og[-.][-0-9a-z]+\' . change-log-mode) (/\.?\(?:gitconfig\|gnokiirc\|hgrc\|kde.*rc\|mime\.types\|wgetrc\)\' . conf-mode) (/\.\(?:asound\|enigma\|fetchmail\|gltron\|gtk\|hxplayer\|mairix\|mbsync\|msmtp\|net\|neverball\|nvidia-settings-\|offlineimap\|qt/.+\|realplayer\|reportbug\|rtorrent\.\|screen\|scummvm\|sversion\|sylpheed/.+\|xmp\)rc\' . conf-mode) (/\.\(?:gdbtkinit\|grip\|mpdconf\|notmuch-config\|orbital/.+txt\|rhosts\|tuxracer/options\)\' . conf-mode) (/\.?X\(?:default\|resource\|re\)s\> . conf-xdefaults-mode) (/X11.+app-defaults/\|\.ad\' . conf-xdefaults-mode) (/X11.+locale/.+/Compose\' . conf-colon-mode) (/X11.+locale/compose\.dir\' . conf-javaprop-mode) (\.~?[0-9]+\.[0-9][-.0-9]*~?\' nil t) (\.\(?:orig\|in\|[bB][aA][kK]\)\' nil t) ([/.]c\(?:on\)?f\(?:i?g\)?\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-mode-maybe) (\.[1-9]\' . nroff-mode) (\.art\' . image-mode) (\.avs\' . image-mode) (\.bmp\' . image-mode) (\.cmyk\' . image-mode) (\.cmyka\' . image-mode) (\.crw\' . image-mode) (\.dcr\' . image-mode) (\.dcx\' . image-mode) (\.dng\' . image-mode) (\.dpx\' . image-mode) (\.fax\' . image-mode) (\.hrz\' . image-mode) (\.icb\' . image-mode) (\.icc\' . image-mode) (\.icm\' . image-mode) (\.ico\' . image-mode) (\.icon\' . image-mode) (\.jbg\' . image-mode) (\.jbig\' . image-mode) (\.jng\' . image-mode) (\.jnx\' . image-mode) (\.miff\' . image-mode) (\.mng\' . image-mode) (\.mvg\' . image-mode) (\.otb\' . image-mode) (\.p7\' . image-mode) (\.pcx\' . image-mode) (\.pdb\' . image-mode) (\.pfa\' . image-mode) (\.pfb\' . image-mode) (\.picon\' . image-mode) (\.pict\' . image-mode) (\.rgb\' . image-mode) (\.rgba\' . image-mode) (\.tga\' . image-mode) (\.wbmp\' . image-mode) (\.webp\' . image-mode) (\.wmf\' . image-mode) (\.wpg\' . image-mode) (\.xcf\' . image-mode) (\.xmp\' . image-mode) (\.xwd\' . image-mode) (\.yuv\' . image-mode) (\.tgz\' . tar-mode) (\.tbz2?\' . tar-mode) (\.txz\' . tar-mode) (\.tzst\' . tar-mode) (\.drv\' . latex-mode) (/LICENSE\' . text-mode) (\.log\' . text-mode) (rc\' . conf-mode) (\.\(?:hex\|nes\)\' . hexl-mode) (\.vue\' . web-mode))
+
+#+begin_src emacs-lisp :tangle yes
+;; (require 'react-snippets)
+#+end_src
+
+#+RESULTS:
+: react-snippets
+
+** LSP + DAP
+*** Require dap-mode
+#+begin_src elisp :tangle yes
+;; (require 'dap-node)
+;; (require 'dap-firefox)
+;; (require 'dap-ruby)
+;; (require 'dap-lldb)
+;; (require 'dap-netcore)
+#+end_src
+
+#+RESULTS:
+: dap-netcore
+
+*** Set dap-mode firefox debug program
+#+begin_src emacs-lisp :tangle yes
+;; (dap-register-debug-template "Firefox Browse my-project"
+;;   (list :type "firefox"
+;;         :reAttach t
+;;         :request "launch"
+;;         :webRoot "/home/simon/development/return-to-wintervale/apps/controller"
+;;         :url "http://controller.localhost&"
+;;         :name "Fireox Browse my-project"))
+
+#+end_src
+
+#+RESULTS:
+| Firefox Browse my-project           | :type | firefox     | :reAttach | t                  | :request | launch    | :webRoot | /home/simon/development/return-to-wintervale/apps/controller | :url             | http://controller.localhost& | :name     | Fireox Browse my-project |                |                    |      |     |                     |             |             |             |
+| Firefox Run Configuration           | :type | firefox     | :cwd      | nil                | :request | launch    | :file    | nil                                                          | :reAttach        | t                            | :program  | nil                      | :name          | Firefox::Run       |      |     |                     |             |             |             |
+| Ruby Run Configuration              | :type | Ruby        | :cwd      | nil                | :request | launch    | :program | nil                                                          | :name            | Ruby::Run                    |           |                          |                |                    |      |     |                     |             |             |             |
+| Chrome Browse URL                   | :type | chrome      | :cwd      | nil                | :mode    | url       | :request | launch                                                       | :webRoot         | nil                          | :url      | nil                      | :name          | Chrome Browse URL  |      |     |                     |             |             |             |
+| Chrome Browse File                  | :type | chrome      | :mode     | file               | :cwd     | nil       | :request | launch                                                       | :file            | nil                          | :reAttach | t                        | :name          | Chrome Browse File |      |     |                     |             |             |             |
+| Node Run Configuration              | :type | node        | :cwd      | nil                | :request | launch    | :program | nil                                                          | :name            | Node::Run                    |           |                          |                |                    |      |     |                     |             |             |             |
+| .Net Core Launch (Console)          | :type | coreclr     | :request  | launch             | :mode    | launch    | :name    | NetCoreDbg::Launch                                           | :dap-compilation | dotnet build                 |           |                          |                |                    |      |     |                     |             |             |             |
+| .Net Core Attach (Console)          | :type | coreclr     | :request  | attach             | :mode    | attach    | :name    | NetCoreDbg::Attach                                           |                  |                              |           |                          |                |                    |      |     |                     |             |             |             |
+| LLDB Run Configuration              | :type | lldb        | :request  | launch             | :name    | LLDB::Run | :target  | nil                                                          | :cwd             | nil                          |           |                          |                |                    |      |     |                     |             |             |             |
+| GDBServer Connect Configuration     | :type | gdbserver   | :name     | GDBServer::Connect | :target  | nil       | :cwd     | nil                                                          | :executable      | nil                          | :autorun  | nil                      | :debugger_args | nil                | :env | nil | :showDevDebugOutput | :json-false | :printCalls | :json-false |
+| GDB Run Configuration               | :type | gdb         | :request  | launch             | :name    | GDB::Run  | :target  | nil                                                          | :cwd             | nil                          |           |                          |                |                    |      |     |                     |             |             |             |
+| LLDB (VS Code) :: Run Configuration | :type | lldb-vscode | :cwd      | nil                | :request | launch    | :program | nil                                                          | :name            | LLDB::Run                    |           |                          |                |                    |      |     |                     |             |             |             |
+
+*** Disable all distracting LSP UI Presets
+#+begin_src elisp :tangle yes
+;; (setq
+;;  ;; lsp-eldoc-render-all nil
+;;  lsp-eldoc-enable-hover t
+
+;;  lsp-ui-doc-enable t
+;;  lsp-ui-doc-show-with-mouse t
+
+;;  lsp-ui-sideline-show-hover nil
+;;  lsp-ui-sideline-show-diagnostics t
+;;  lsp-ui-sideline-show-symbol t
+;;  lsp-ui-sideline-show-code-actions nil
+
+;;  lsp-ui-peek-enable t
+;;  lsp-ui-peek-show-directory t
+
+;;  lsp-headerline-breadcrumb-enable t
+
+;;  lsp-lens-enable nil
+
+;;  lsp-enable-symbol-highlighting t
+
+;;  ;; Disable Signature
+;;  lsp-signature-auto-activate t
+;;  lsp-signature-render-documentation t
+;;  lsp-signature-doc-lines 1
+
+;;  ;; Disable make error highlighting
+;;  ;; lsp-prefer-flymake nil
+;;  )
+
+
+;; ;; (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
+
+;; ;; (setq lsp-on-idle-hook nil)
+#+end_src
+
+#+RESULTS:
+: 1
+
+** Flycheck
+*** Disable LSP as default checker and set checker for each major mode
+#+begin_src elisp :tangle yes
+;; (after! lsp-mode
+;;   (remove-hook 'lsp-mode-hook #'+lsp-init-flycheck-or-flymake-h))
+
+;; (defun +js/fix-checker ()
+;;   "Fix LSP overwritten checkers."
+;;   (interactive)
+;;   (when (-contains? '(js2-mode typescript-mode js2-jsx-mode rjsx-mode typescript-tsx-mode) major-mode)
+;;     (flycheck-select-checker 'javascript-eslint)))
+
+;; (add-hook 'lsp-mode-hook #'+js/fix-checker)
+
+
+;; (lsp-defun my/filter-typescript ((params &as &PublishDiagnosticsParams :diagnostics)
+;;                                  _workspace)
+;;   (lsp:set-publish-diagnostics-params-diagnostics
+;;    params
+;;    (or (seq-filter (-lambda ((&Diagnostic :source? :severity?))
+;;                      (and (not (string= "typescript" source?))
+;;                           (< severity? lsp/diagnostic-severity-information)))
+;;                    diagnostics)
+;;        []))
+;;   params)
+
+
+;; (setq lsp-diagnostic-filter 'my/filter-typescript )
+
+;; (setq-default flycheck-disabled-checkers '(javascript-eslint))
+#+end_src
+
+#+RESULTS:
+
+** Misc Functions
+*** Switch to german dictionary (ispell)
+#+begin_src elisp :tangle yes
+;; switch to german dic
+(defun fd-switch-dictionary()
+  (interactive)
+  (let* ((dic ispell-current-dictionary)
+         (change (if (string= dic "deutsch8") "english" "deutsch8")))
+    (ispell-change-dictionary change)
+    (message "Dictionary switched from %s to %s" dic change)
+    ))
+#+end_src
+
+*** Test native JSON and native compilation
+#+begin_src emacs-lisp :tangle yes
+(defun test-native-comp ()
+  (interactive)
+  (if (and (fboundp 'native-comp-available-p)
+           (native-comp-available-p))
+      (message "Native compilation is available")
+    (message "Native complation is *not* available")))
+
+(defun test-native-json ()
+  (interactive)
+  (if (functionp 'json-serialize)
+      (message "Native JSON is available")
+    (message "Native JSON is *not* available")))
+#+end_src
+
+#+RESULTS:
+: test-native-json
+

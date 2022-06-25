@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: R-simple
+# key: R-simple
+# --
+#+BEGIN_SRC R :exports both :results output :session
+#+END_SRC
