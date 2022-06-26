@@ -48,7 +48,7 @@ client.urgent           $bg-urgent    $bg-urgent   $text          $bar $bar
 
 ############### OUTPUT CONFIGURATION ################
 # Wallpaper
-output * bg ~/Pictures/wallpaper1.jpg fill
+output * bg ~/Pictures/wallpaper7.png fill
 
 # Enable freesync
 output * adaptive_sync on
