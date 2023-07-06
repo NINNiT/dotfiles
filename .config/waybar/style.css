@@ -1,0 +1,53 @@
+* {
+  border: none;
+  font-family: FiraMono Nerd;
+  color: white;
+  min-height: 0;
+}
+
+window#waybar {
+  background-color: #282828;
+}
+
+window#waybar.leftbar {
+  font-size: 14px;
+}
+
+window#waybar.rightbar {
+  font-size: 12px;
+  font-weight:bold;
+}
+
+#workspaces button {
+  transition: 0.3s ease all;
+}
+
+#workspaces button:hover {
+  color: black;
+}
+
+#workspaces button.active {
+  background-color: #504945;
+}
+
+#workspaces button.urgent {
+  background-color: #fb4934;
+}
+
+#network,
+#cpu,
+#memory,
+#custom-gputemp,
+#custom-cputemp,
+#clock,
+#battery,
+#pulseaudio {
+  padding: 3px 10px;
+  margin: 5px;
+  background-color: #504945;
+  border-radius: 10px;
+}
+
+#custom-separator {
+  font-weight: bold;
+}

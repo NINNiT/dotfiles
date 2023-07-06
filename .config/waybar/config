@@ -1,0 +1,113 @@
+[
+{
+    "layer": "top",
+    "name" : "leftbar",
+
+    "modules-left": [
+        "wlr/workspaces",
+    ],
+    "modules-center": [
+        "hyprland/window"
+    ],
+    "modules-right": [
+        "network",
+        "custom/gputemp",
+        "custom/cputemp",
+        "cpu",
+        "memory",
+        "pulseaudio",
+        "clock",
+	    "battery",
+        "tray"
+    ],
+
+    "wlr/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false,
+        "on-click": "activate",
+        "format": "{name}  {icon}",
+        "format-icons": {
+            "urgent": "",
+            "active": "",
+            "default": ""
+        }
+    },
+
+    "cpu": {
+            "format": "  {usage}%",
+            "tooltip": false
+     },
+
+    "memory": {
+        "format": "󰍛  {}% "
+    },
+
+    "hyprland/window": {
+        "separate-outputs": true
+    },
+
+	"battery": {
+        "interval": 60,
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon}   {capacity}%",
+        "format-charging": "{icon}   {capacity}% ",
+        "format-icons": ["", "", "", "", ""],
+    },
+
+    "custom/gputemp": {
+        "exec": "$HOME/.config/waybar/scripts/temp.sh gpu",
+        "return-type": "",
+        "interval": 5,
+        "format": " GPU  {}°C"
+    },
+    "custom/cputemp": {
+        "exec": "$HOME/.config/waybar/scripts/temp.sh cpu",
+        "return-type": "",
+        "interval": 5,
+        "format": " CPU  {}°C"
+    },
+
+   "network": {
+        "interface": "wlan0",
+        "format-wifi": "  {essid}",
+        "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": " disconnected ",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+
+    "sway/window": {
+        "max-length":100
+    },
+
+    "pulseaudio": {
+       "scroll-step": 1,
+       "format": "{icon}  {volume}%",
+       "format-bluetooth": "{icon}  {volume}%",
+       "format-muted": "",
+       "format-icons": {
+           "headphones": "",
+           "handsfree": "",
+           "headset": "",
+           "phone": "",
+           "portable": "",
+           "car": "",
+           "default": ["", ""]
+       },
+       "on-click": "pavucontrol"
+    },
+
+    "custom/separator": {
+        "format": " // ",
+        "interval": "once",
+        "tooltip": false
+    },
+
+    "clock": {
+        "format": "  {:%a, %d. %b  %H:%M}",
+    }
+}
+]

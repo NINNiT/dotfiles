@@ -11,8 +11,7 @@
 #italic_font      ComicCodeLigatures Nerd Font Medium Italic
 #bold_italic_font ComicCodeLigatures Nerd Font Bold Italic
 
-# font_family    ComicCodeLigatures Nerd Font
-font_family    JetBrains Mono
+font_family    ComicCodeLigatures Nerd Font
 bold_font       auto
 italic_font      auto
 bold_italic_font auto
@@ -28,7 +27,7 @@ bold_italic_font auto
 #:     italic_font      Operator Mono Book Italic
 #:     bold_italic_font Operator Mono Medium Italic
 
-font_size 13
+font_size 12
 
 #: Font size (in pts)
 
@@ -376,6 +375,48 @@ font_size 13
 #: Tab bar colors and styles
 
 #: }}}
+
+#: Color scheme {{{
+
+# foreground #dddddd
+# background #000000
+
+
+#: Color scheme {{{
+# foreground #ebdbb2
+# background #282828
+
+#: black
+# color0 #282828
+# color8 #928374
+
+#: red
+# color1 #cc241d
+# color9 #fb4934
+
+#: green
+# color2  #98971a
+# color10 #b8bb26
+
+#: yellow
+# color3  #d79921
+# color11 #fabd2f
+
+#: blue
+# color4  #458588
+# color12 #83a598
+
+#: magenta
+# color5  #b16286
+# color13 #d3869b
+
+#: cyan
+# color6  #689d6a
+# color14 #8ec07c
+
+#: white
+# color7  #a89984
+# color15 #ebdbb2
 
 
 
@@ -918,6 +959,6 @@ font_size 13
 
 
 # BEGIN_KITTY_THEME
-# Gruvbox Dark Hard
+# Catppuccin-Mocha
 include current-theme.conf
 # END_KITTY_THEME

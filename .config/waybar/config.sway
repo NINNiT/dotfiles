@@ -1,0 +1,131 @@
+[
+{
+    "layer": "top",
+    "name" : "leftbar",
+    "output": ["DP-3"],
+
+    "modules-left": [
+        "sway/workspaces",
+        "sway/mode"
+    ],
+    "modules-center": [
+        "sway/window"
+    ],
+    "modules-right": [
+        "network",
+        "custom/gputemp",
+        "custom/cputemp",
+        "cpu",
+        "memory",
+        "pulseaudio",
+        "clock",
+        "tray"
+    ],
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false,
+        "format": "{name}  {icon}",
+        "format-icons": {
+            "urgent": "",
+            "focused": "",
+            "default": ""
+        }
+    },
+
+    "cpu": {
+            "format": " {usage}%",
+            "tooltip": false
+     },
+
+    "memory": {
+        "format": " {}% "
+    },
+
+    "custom/gputemp": {
+        "exec": "$HOME/.config/waybar/scripts/temp.sh gpu",
+        "return-type": "",
+        "interval": 5,
+        "format": " GPU {}°C"
+    },
+    "custom/cputemp": {
+        "exec": "$HOME/.config/waybar/scripts/temp.sh cpu",
+        "return-type": "",
+        "interval": 5,
+        "format": " CPU {}°C"
+    },
+
+   "network": {
+        "interface": "wlan0",
+        "format-wifi": " {essid}",
+        "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+
+    "sway/window": {
+        "max-length":100
+    },
+
+    "pulseaudio": {
+       "scroll-step": 1,
+       "format": "{icon} {volume}%",
+       "format-bluetooth": "{icon} {volume}%",
+       "format-muted": "",
+       "format-icons": {
+           "headphones": "",
+           "handsfree": "",
+           "headset": "",
+           "phone": "",
+           "portable": "",
+           "car": "",
+           "default": ["", ""]
+       },
+       "on-click": "pavucontrol"
+    },
+
+    "custom/separator": {
+        "format": " // ",
+        "interval": "once",
+        "tooltip": false
+    },
+
+    "clock": {
+        "format-alt": "{:%a, %d. %b  %H:%M}"
+    }
+},
+{
+    "layer": "top",
+    "name" : "rightbar",
+    "output": ["DP-2"],
+
+    "modules-left": [
+        "sway/workspaces",
+        "sway/mode"
+    ],
+    "modules-center": [
+        "sway/window"
+    ],
+    "modules-right": [
+        "clock"
+    ],
+
+    "sway/window": {
+        "max-length": 50
+    },
+    "clock": {
+        "format-alt": "{:%a, %d. %b  %H:%M}"
+    },
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "urgent": "",
+            "focused": "",
+            "default": ""
+        }
+    },
+}
+]

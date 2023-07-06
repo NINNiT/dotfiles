@@ -1,0 +1,50 @@
+* {
+  border: none;
+  font-family: Comic Code Ligatures Medium;
+  min-height: 0;
+  color: white;
+}
+
+window#waybar {
+  background-color: #282828;
+}
+
+window#waybar.leftbar {
+  font-size: 15px;
+}
+
+window#waybar.rightbar {
+  font-size: 12px;
+}
+
+#workspaces button {
+  transition: 0.3s ease all;
+}
+
+#workspaces button:hover {
+}
+
+#workspaces button.focused {
+  background-color: #504945;
+}
+
+#workspaces button.urgent {
+  background-color: #fb4934;
+}
+
+#network,
+#cpu,
+#memory,
+#custom-gputemp,
+#custom-cputemp,
+#clock,
+#pulseaudio {
+  padding: 3px 10px;
+  margin: 5px;
+  background-color: #504945;
+  border-radius: 10px;
+}
+
+#custom-separator {
+  font-weight: bold;
+}
