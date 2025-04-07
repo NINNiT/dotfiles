@@ -1,1 +1,5 @@
 0000000000000000000000000000000000000000 803bc181d7c0d6d5eeba9274d9be49b287294d99 NINNiT <soelderer@gmail.com> 1741626695 +0100	clone: from https://github.com/LazyVim/starter
+803bc181d7c0d6d5eeba9274d9be49b287294d99 32dace0d41786d086596c8505c18143f774c58b7 NINNiT (aider) <soelderer@gmail.com> 1742604205 +0100	commit: feat: add nvim-aider plugin configuration for AI-assisted codingEnd File# discord-openai/discox
+32dace0d41786d086596c8505c18143f774c58b7 4079159df30f409f61e1c2a1d4f9fbd8ec4b40a7 NINNiT (aider) <soelderer@gmail.com> 1742641022 +0100	commit: feat: add CodeCompanion integration with Copilot
+4079159df30f409f61e1c2a1d4f9fbd8ec4b40a7 64a69ed381cfb3506dc30df6c0220210946e99b3 NINNiT (aider) <soelderer@gmail.com> 1742641023 +0100	commit: refactor: change CodeCompanion keymap from LocalLeader to Leader
+64a69ed381cfb3506dc30df6c0220210946e99b3 6594d54793bd6870db23ddc84003afa756a7a789 NINNiT (aider) <soelderer@gmail.com> 1742641077 +0100	commit: feat: add descriptions to CodeCompanion keymaps for which-key
