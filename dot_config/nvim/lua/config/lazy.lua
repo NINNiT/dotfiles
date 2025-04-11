@@ -23,7 +23,6 @@ require("lazy").setup({
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     -- import some LazyExtras that i always use
     { import = "lazyvim.plugins.extras.dap.core" },
-    { import = "lazyvim.plugins.extras.coding.nvim-cmp" },
     -- { import = "lazyvim.plugins.extras.editor.minidiff" },
     -- import/override with your plugins
     { import = "plugins" },
